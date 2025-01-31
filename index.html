@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floating Fish Extension</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #87CEEB, #00BFFF);
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        .fish {
+            position: absolute;
+            width: 100px;
+            height: auto;
+            pointer-events: none;
+            transition: all 3s ease;
+        }
+
+        #reminder {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <img src="fish.png" alt="Fish" class="fish" id="fish">
+    <div id="reminder">Time to hydrate!</div>
+
+    <script>
+        const fish = document.getElementById('fish');
+        const reminder = document.getElementById('reminder');
+
+        function getRandomPosition() {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const fishWidth = fish.offsetWidth;
+            const fishHeight = fish.offsetHeight;
+
+            // Calculate safe boundaries
+            const maxX = screenWidth - fishWidth;
+            const maxY = screenHeight - fishHeight;
+
+            return {
+                x: Math.random() * maxX,
+                y: Math.random() * maxY
+            };
+        }
+
+        function moveFish() {
+            const newPos = getRandomPosition();
+            
+            // Directly set absolute coordinates
+            fish.style.left = `${newPos.x}px`;
+            fish.style.top = `${newPos.y}px`;
+
+            // Schedule next movement after transition completes
+            setTimeout(moveFish, 3000);
+        }
+
+        window.addEventListener('resize', () => {
+            // Immediately correct position if window is resized
+            const currentX = parseFloat(fish.style.left) || 0;
+            const currentY = parseFloat(fish.style.top) || 0;
+            const maxX = window.innerWidth - fish.offsetWidth;
+            const maxY = window.innerHeight - fish.offsetHeight;
+
+            fish.style.left = `${Math.min(currentX, maxX)}px`;
+            fish.style.top = `${Math.min(currentY, maxY)}px`;
+        });
+
+        // Start movement
+        moveFish();
+
+        // Reminder system (unchanged)
+        function showReminder() {
+            reminder.style.display = 'block';
+            setTimeout(() => {
+                reminder.style.display = 'none';
+            }, 5000);
+        }
+
+        function setReminder() {
+            const interval = prompt("Set hydration reminder interval in minutes:");
+            if (interval && !isNaN(interval)) {
+                setInterval(showReminder, interval * 60000);
+                alert(`Hydration reminder set for every ${interval} minutes!`);
+            } else {
+                alert("Invalid input. Please enter a number.");
+            }
+        }
+
+        setTimeout(() => {
+            setReminder();
+        }, 1000);
+    </script>
+</body>
+</html>
